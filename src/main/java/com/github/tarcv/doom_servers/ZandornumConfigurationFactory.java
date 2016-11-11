@@ -12,7 +12,6 @@ public class ZandornumConfigurationFactory implements Engine {
 	private static final Logger LOG = LoggerFactory.getLogger(ZandornumConfigurationFactory.class);
     private static final String CONFIG_FILENAME = "server.cfg";
     private static final String RESERVED_PARAM_PREFIX = "__";
-	private static final String INVERT_CVAR_PREFIX = RESERVED_PARAM_PREFIX + "invert_";
 
     @Override
     public Configuration prepareConfiguration(Map<String, String> params) {
