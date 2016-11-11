@@ -24,3 +24,6 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+agentstore.jks
+server.cer
+src/main/resources/keystore.p12
