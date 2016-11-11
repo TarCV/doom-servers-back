@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ServerProvider {
     public Server getServer(Configuration configuration) {
-        return new Server();
+        return new Server(configuration);
     }
 }
