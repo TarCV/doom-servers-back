@@ -8,13 +8,13 @@ import java.io.Serializable;
 public class Server implements Serializable {
 	private static final long serialVersionUID = 6929611599394688489L;
 
-	private final Configuration configuration;
+	private final ServerConfiguration configuration;
 
-	public Server(Configuration configuration) {
+	public Server(ServerConfiguration configuration) {
 		this.configuration = configuration;
 	}
 
-	public Configuration getConfiguration() {
+	public ServerConfiguration getConfiguration() {
 		return configuration;
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.tarcv.doom_servers.messages.RunServer;
 
 @Controller
 @RequestMapping(path = "server")
@@ -28,11 +29,12 @@ public class ServerController {
 		String engineName = params.get("__engine");
 		Engine engine = engineFactory.create(engineName);
 		Map<String, String> updatedParams = addFixedParams(params);
-		Configuration configuration = engine.prepareConfiguration(updatedParams);
-		Server server = serverProvider.getServer(configuration);
+		ServerConfiguration configuration = engine.prepareConfiguration(updatedParams);
+		//Server server = serverProvider.getServer(configuration);
 
 		//simpMessageTemplate.convertAndSend("", server);
-		webSocketHandler.sendToAll(server);
+
+		webSocketHandler.sendToAll(new RunServer(configuration));
 
 		return "hello";
 //		return server.toString();

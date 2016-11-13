@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ServerProvider {
-    public Server getServer(Configuration configuration) {
+    public Server getServer(ServerConfiguration configuration) {
         return new Server(configuration);
     }
 }

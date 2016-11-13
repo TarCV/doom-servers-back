@@ -14,17 +14,17 @@ public class ZandornumConfigurationFactory implements Engine {
     private static final String RESERVED_PARAM_PREFIX = "__";
 
     @Override
-    public Configuration prepareConfiguration(Map<String, String> params) {
+    public ServerConfiguration prepareConfiguration(Map<String, String> params) {
         LOG.info(params.toString());
-        String commandLineString = createCommandLine();
-        Map<String, String> configs = createConfigs(params);
+        List<String> commandLineString = createCommandLine();
+        Map<String, List<String>> configs = createConfigs(params);
         Objects.requireNonNull(commandLineString);
         Objects.requireNonNull(configs);
-        return new Configuration(commandLineString, configs);
+        return new ServerConfiguration(commandLineString, configs);
     }
 
-    private Map<String, String> createConfigs(Map<String, String> params) {
-        ConfigBuilder configuration = new ConfigBuilder(" ", " ", "\n");
+    private Map<String, List<String>> createConfigs(Map<String, String> params) {
+        ParameterBuilder<List<String>> configuration = new ConfigFileBuilder(" ");
         params.entrySet().stream()
                 .filter(stringStringEntry -> !stringStringEntry.getKey().isEmpty())
                 .filter(stringStringEntry -> !stringStringEntry.getKey().startsWith(RESERVED_PARAM_PREFIX))
@@ -44,10 +44,10 @@ public class ZandornumConfigurationFactory implements Engine {
 
         // Fixed parameters should be added after copying params to make sure they were't overridden by user
         addGameMode(configuration, params);
-        return Collections.singletonMap(CONFIG_FILENAME, configuration.toString());
+        return Collections.singletonMap(CONFIG_FILENAME, configuration.build());
     }
 
-    private void addGameMode(ConfigBuilder configs, Map<String, String> params) {
+    private void addGameMode(ParameterBuilder<?> configs, Map<String, String> params) {
         String gameMode = params.get("__gameMode");
         if (gameMode == null) {
             throw new IllegalArgumentException("Gamemode was not defined");
@@ -55,57 +55,14 @@ public class ZandornumConfigurationFactory implements Engine {
         configs.addKeyValue(gameMode, "1");
     }
 
-    private String createCommandLine() {
-        ConfigBuilder commandline = new ConfigBuilder("=", " ", " ");
+    private List<String> createCommandLine() {
+        ParameterBuilder<List<String>> commandline = new CommandLineBuilder(" ");
         commandline.addCommand("-host");
         commandline.addCommand("+exec", CONFIG_FILENAME);
-        return commandline.toString();
+        return commandline.build();
     }
 
-    private class ConfigBuilder {
-        private StringBuilder output = new StringBuilder();
-        private final String keyValueDelimiter;
-        private final String fragmentDelimiter;
-        private final String argumentDelimiter;
-        private final Set<String> definedKeys = new HashSet<>();
-
-        private ConfigBuilder(String keyValueDelimiter, String argumentDelimiter, String fragmentDelimiter) {
-            this.keyValueDelimiter = keyValueDelimiter;
-            this.fragmentDelimiter = fragmentDelimiter;
-            this.argumentDelimiter = argumentDelimiter;
-        }
-
-        public void addKeyValue(String key, String value) {
-            addFragmentDelimiter();
-            if (definedKeys.contains(key)) {
-                throw new IllegalArgumentException("Keys with the same name cannot be defined two times - " + key);
-            }
-            output.append(key)
-                    .append(keyValueDelimiter)
-                    .append(value);
-            definedKeys.add(key);
-        }
-
-        public void addCommand(String command, String... arguments) {
-            addFragmentDelimiter();
-            String[] combined = prepend(arguments, command);
-            String fragment = String.join(argumentDelimiter, (CharSequence[]) combined);
-            output.append(fragment);
-        }
-
-        private void addFragmentDelimiter() {
-            if (output.length() > 0) {
-                output.append(fragmentDelimiter);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return output.toString();
-        }
-    }
-
-    private static String[] prepend(String[] array, String item) {
+    static String[] prepend(String[] array, String item) {
         String[] combined = new String[array.length+1];
         System.arraycopy(array, 0, combined, 1, array.length);
         combined[0] = item;

@@ -17,19 +17,19 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tarcv.doom_servers.messages.Authenticated;
+import com.github.tarcv.doom_servers.messages.Hello;
+import com.github.tarcv.doom_servers.messages.Mapper;
+import com.github.tarcv.doom_servers.messages.Message;
 
 @Component
 public class MyWebSocketHandler extends BinaryWebSocketHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(MyWebSocketHandler.class);
 	private Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
-	public void sendToAll(Object object) throws JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
-		String serverAsJson = mapper.writeValueAsString(object);
-
+	public void sendToAll(Message object) throws JsonProcessingException {
+		WebSocketMessage<?> message = serializeMessage(object);
 		synchronized(sessions) {
-			WebSocketMessage<?> message = new TextMessage(serverAsJson);
 			sessions.forEach(session -> {
 				try {
 					session.sendMessage(message);
@@ -39,6 +39,12 @@ public class MyWebSocketHandler extends BinaryWebSocketHandler {
 				}
 			});
 		}
+	}
+
+	private static WebSocketMessage<?> serializeMessage(Message object) throws JsonProcessingException {
+		String serverAsJson = Mapper.writeValueAsString(object);
+		WebSocketMessage<?> message = new TextMessage(serverAsJson);
+		return message;
 	}
 
 	@Override
@@ -62,7 +68,12 @@ public class MyWebSocketHandler extends BinaryWebSocketHandler {
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
         assert message.isLast();
         ByteBuffer payload = message.getPayload();
-        Message agentMessage = new ObjectMapper().readValue(payload.array(), payload.position(), payload.remaining(), Message.class);
+        Message agentMessage = Mapper.readValue(payload.array(), payload.position(), payload.remaining(), Message.class);
         LOG.debug("message received: " + agentMessage.getClass().getSimpleName());
-	}
+        if (agentMessage instanceof Hello) {
+        	WebSocketMessage<?> response = serializeMessage(new Authenticated(true));
+        	session.sendMessage(response);
+        }
+
+    }
 }
