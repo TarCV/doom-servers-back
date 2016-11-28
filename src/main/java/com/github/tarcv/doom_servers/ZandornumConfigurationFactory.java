@@ -58,7 +58,9 @@ public class ZandornumConfigurationFactory implements Engine {
     private List<String> createCommandLine() {
         ParameterBuilder<List<String>> commandline = new CommandLineBuilder(" ");
         commandline.addCommand("-host");
+        commandline.addCommand("-private");
         commandline.addCommand("+exec", CONFIG_FILENAME);
+        commandline.addCommand("+echo", "DoomServerReady");	//agent will wait for this line to appear in STDOUT/log
         return commandline.build();
     }
 

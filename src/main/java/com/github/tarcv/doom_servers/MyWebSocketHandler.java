@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,12 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tarcv.doom_servers.messages.Authenticated;
+import com.github.tarcv.doom_servers.messages.ConsoleCommand;
+import com.github.tarcv.doom_servers.messages.ConsoleResult;
 import com.github.tarcv.doom_servers.messages.Hello;
 import com.github.tarcv.doom_servers.messages.Mapper;
 import com.github.tarcv.doom_servers.messages.Message;
+import com.github.tarcv.doom_servers.messages.ServerStarted;
 
 @Component
 public class MyWebSocketHandler extends BinaryWebSocketHandler {
@@ -73,6 +77,15 @@ public class MyWebSocketHandler extends BinaryWebSocketHandler {
         if (agentMessage instanceof Hello) {
         	WebSocketMessage<?> response = serializeMessage(new Authenticated(true));
         	session.sendMessage(response);
+        } else if (agentMessage instanceof ServerStarted) {
+        	ServerStarted startedMessage = (ServerStarted)agentMessage;
+        	if (startedMessage.isSuccessful()) {
+        		List<String> commands = Collections.singletonList("cvarlist;echo DoomConsoleResultEnd");
+        		WebSocketMessage<?> cvarlistCommand = serializeMessage(new ConsoleCommand(commands));
+				session.sendMessage(cvarlistCommand );
+        	}
+        } else if (agentMessage instanceof ConsoleResult) {
+        	LOG.debug(String.join(";", ((ConsoleResult)agentMessage).getLines()));;
         }
 
     }
