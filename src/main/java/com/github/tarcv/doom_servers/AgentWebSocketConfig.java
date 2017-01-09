@@ -10,14 +10,19 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 
 @Configuration
 @EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer
+public class AgentWebSocketConfig implements WebSocketConfigurer
 {
     @Autowired
     protected MyWebSocketHandler webSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/gs-guide-websocket").setAllowedOrigins("*");
+    	registry.addHandler(webSocketHandler, "/gs-guide-websocket")
+    		.setAllowedOrigins("*");
+
+    	registry.addHandler(webSocketHandler, "/console")
+        	.setAllowedOrigins("*")
+        	.withSockJS();
     }
 
 

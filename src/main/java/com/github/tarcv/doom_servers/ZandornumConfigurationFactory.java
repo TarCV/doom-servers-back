@@ -14,7 +14,7 @@ public class ZandornumConfigurationFactory implements Engine {
     private static final String RESERVED_PARAM_PREFIX = "__";
 
     @Override
-    public ServerConfiguration prepareConfiguration(Map<String, String> params) {
+    public ServerConfiguration prepareConfiguration(Map<String, Object> params) {
         LOG.info(params.toString());
         List<String> commandLineString = createCommandLine();
         Map<String, List<String>> configs = createConfigs(params);
@@ -23,23 +23,20 @@ public class ZandornumConfigurationFactory implements Engine {
         return new ServerConfiguration(commandLineString, configs);
     }
 
-    private Map<String, List<String>> createConfigs(Map<String, String> params) {
+    private Map<String, List<String>> createConfigs(Map<String, Object> params) {
         ParameterBuilder<List<String>> configuration = new ConfigFileBuilder(" ");
         params.entrySet().stream()
                 .filter(stringStringEntry -> !stringStringEntry.getKey().isEmpty())
                 .filter(stringStringEntry -> !stringStringEntry.getKey().startsWith(RESERVED_PARAM_PREFIX))
                 // TODO whitelist filtering
                 .forEach(stringStringEntry -> {
-                    String value = stringStringEntry.getValue();
-                    String fixedValue;
+                    String value = String.valueOf(stringStringEntry.getValue());
                     if ("false".equalsIgnoreCase(value)) {
-                        fixedValue = "0";
+                        value = "0";
                     } else if ("true".equalsIgnoreCase(value)) {
-                        fixedValue = "1";
-                    } else {
-                        fixedValue = value;
+                        value = "1";
                     }
-                    configuration.addKeyValue(stringStringEntry.getKey(), fixedValue);
+                    configuration.addKeyValue(stringStringEntry.getKey(), value);
                 });
 
         // Fixed parameters should be added after copying params to make sure they were't overridden by user
@@ -47,8 +44,8 @@ public class ZandornumConfigurationFactory implements Engine {
         return Collections.singletonMap(CONFIG_FILENAME, configuration.build());
     }
 
-    private void addGameMode(ParameterBuilder<?> configs, Map<String, String> params) {
-        String gameMode = params.get("__gameMode");
+    private void addGameMode(ParameterBuilder<?> configs, Map<String, Object> params) {
+        String gameMode = String.valueOf(params.get("__gameMode"));
         if (gameMode == null) {
             throw new IllegalArgumentException("Gamemode was not defined");
         }

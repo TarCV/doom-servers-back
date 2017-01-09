@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.socket.handler.BinaryWebSocketHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tarcv.doom_servers.messages.Authenticated;
+import com.github.tarcv.doom_servers.messages.ConsoleBuffer;
 import com.github.tarcv.doom_servers.messages.ConsoleCommand;
 import com.github.tarcv.doom_servers.messages.ConsoleResult;
 import com.github.tarcv.doom_servers.messages.Hello;
@@ -30,6 +33,14 @@ import com.github.tarcv.doom_servers.messages.ServerStarted;
 public class MyWebSocketHandler extends BinaryWebSocketHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(MyWebSocketHandler.class);
 	private Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+
+	private final SimpMessagingTemplate frontWebsocket;
+
+	@Autowired
+	public MyWebSocketHandler(SimpMessagingTemplate frontWebsocket) {
+		super();
+		this.frontWebsocket = frontWebsocket;
+	}
 
 	public void sendToAll(Message object) throws JsonProcessingException {
 		WebSocketMessage<?> message = serializeMessage(object);
@@ -85,7 +96,11 @@ public class MyWebSocketHandler extends BinaryWebSocketHandler {
 				session.sendMessage(cvarlistCommand );
         	}
         } else if (agentMessage instanceof ConsoleResult) {
-        	LOG.debug(String.join(";", ((ConsoleResult)agentMessage).getLines()));;
+        	LOG.debug(String.join(";", ((ConsoleResult)agentMessage).getLines()));
+        } else if (agentMessage instanceof ConsoleBuffer) {
+        	List<String> consoleLines = ((ConsoleBuffer)agentMessage).getLines();
+			LOG.debug(String.join(";", consoleLines));
+        	frontWebsocket.convertAndSend(FrontWebSocketConfig.FRONT_PREFIX + "/server/1/console", consoleLines);
         }
 
     }
