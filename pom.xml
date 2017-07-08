@@ -22,8 +22,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-    	<jackson-lombok.version>1.1</jackson-lombok.version>
-    </properties>
+	 	<jackson-lombok.version>1.1</jackson-lombok.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -44,25 +44,25 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-	      <dependency>
-	          <groupId>com.github.tarcv.doom_servers</groupId>
-	          <artifactId>common</artifactId>
-	          <version>0.0.1-SNAPSHOT</version>
-	      </dependency>
-	      <dependency>
-	      	<groupId>org.apache.commons</groupId>
-	      	<artifactId>commons-lang3</artifactId>
-	      	<version>3.4</version>
-	      </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>15.0</version>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.tarcv.doom_servers</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>15.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -72,15 +72,14 @@
 			<artifactId>hibernate-validator</artifactId>
 			</dependency>
 		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-jpamodelgen</artifactId>
-		    </dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			</dependency>
 	</dependencies>
-
 
 	<build>
 		<plugins>
