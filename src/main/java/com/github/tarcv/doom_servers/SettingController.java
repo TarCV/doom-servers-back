@@ -29,12 +29,12 @@ public class SettingController {
 
 	private static Map<SettingSectionsEntity, List<SettingsEntity>> groupBySections(List<SettingsEntity> settings) {
 		Map<SettingSectionsEntity, List<SettingsEntity>> result = new HashMap<>();
-		for (SettingsEntity setting : settings) {
+		/*for (SettingsEntity setting : settings) {
 			SettingSectionsEntity section = setting.getSection();
 			result
 				.computeIfAbsent(section, k -> new ArrayList<>())
 				.add(setting);
-		}
+		}*/
 		return result;
 	}
 }

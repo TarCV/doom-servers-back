@@ -81,7 +81,7 @@ public class MyWebSocketHandler extends BinaryWebSocketHandler {
 
     @Override
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
-        assert message.isLast();
+/*        assert message.isLast();
         ByteBuffer payload = message.getPayload();
         Message agentMessage = Mapper.readValue(payload.array(), payload.position(), payload.remaining(), Message.class);
         LOG.debug("message received: " + agentMessage.getClass().getSimpleName());
@@ -102,6 +102,6 @@ public class MyWebSocketHandler extends BinaryWebSocketHandler {
 			LOG.debug(String.join(";", consoleLines));
         	frontWebsocket.convertAndSend(FrontWebSocketConfig.FRONT_PREFIX + "/server/1/console", consoleLines);
         }
-
+*/
     }
 }
